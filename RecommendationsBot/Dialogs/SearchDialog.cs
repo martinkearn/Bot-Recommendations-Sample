@@ -1,5 +1,7 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Connector;
+using RecommendationsBot.Interfaces;
+using RecommendationsBot.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,10 +13,12 @@ namespace RecommendationsBot.Dialogs
     [Serializable]
     public class SearchDialog : IDialog<object>
     {
+        private readonly ICatalogRepository _catalogRepository;
         private string _searchQuery;
 
         public SearchDialog(string message)
         {
+            _catalogRepository = new CatalogRepository();
             _searchQuery = message;
         }
 
@@ -22,7 +26,7 @@ namespace RecommendationsBot.Dialogs
         public async Task StartAsync(IDialogContext context)
         {
             //get choices
-            var choices = new List<string>() { "1", "2", "3" };
+            var catalogItems = _catalogRepository.SearchCatalogItems(_searchQuery);
 
             //Create card to present choices 
             IMessageActivity messageButtons = (Activity)context.MakeMessage();
@@ -30,9 +34,9 @@ namespace RecommendationsBot.Dialogs
             messageButtons.Type = "message";
             messageButtons.Attachments = new List<Attachment>();
             List<CardAction> cardButtons = new List<CardAction>();
-            foreach (var choice in choices)
+            foreach (var catalogItem in catalogItems)
             {
-                cardButtons.Add(new CardAction() { Value = choice, Type = "imBack", Title = choice });
+                cardButtons.Add(new CardAction() { Value = catalogItem.id, Type = "imBack", Title = catalogItem.name });
             }
             HeroCard plCard = new HeroCard()
             {
