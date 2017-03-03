@@ -36,7 +36,7 @@ namespace RecommendationsBot.Dialogs
             List<CardAction> cardButtons = new List<CardAction>();
             foreach (var catalogItem in catalogItems)
             {
-                cardButtons.Add(new CardAction() { Value = catalogItem.id, Type = "imBack", Title = catalogItem.name });
+                cardButtons.Add(new CardAction() { Value = catalogItem.name, Type = "imBack", Title = catalogItem.name });
             }
             HeroCard plCard = new HeroCard()
             {

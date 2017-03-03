@@ -2,7 +2,9 @@
 using RecommendationsBot.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Web;
 
 namespace RecommendationsBot.Repositories
@@ -14,12 +16,27 @@ namespace RecommendationsBot.Repositories
 
         public CatalogRepository()
         {
+            //this is a very basic way of populating the list of catalog items for the sake of a simple example. In a real scenario, this would come from a database or API
             var catalogItems = new List<CatalogItem>();
-            catalogItems.Add(new CatalogItem() { id = "1", name = "Item 1" });
-            catalogItems.Add(new CatalogItem() { id = "2", name = "Item 2" });
-            catalogItems.Add(new CatalogItem() { id = "3a", name = "Item 3 A" });
-            catalogItems.Add(new CatalogItem() { id = "3b", name = "Item 3 B" });
-            catalogItems.Add(new CatalogItem() { id = "4", name = "Item 4" });
+            var request = HttpContext.Current.Request;
+            var dataFilePath = request.PhysicalApplicationPath +"/Data/catalog.csv";
+            using (var fileStream = new FileStream(dataFilePath, FileMode.Open))
+            {
+                using (var streamReader = new StreamReader(fileStream, Encoding.UTF8))
+                {
+                    string line;
+                    while ((line = streamReader.ReadLine()) != null)
+                    {
+                        var cells = line.Split(',');
+                        var catalogItem = new CatalogItem()
+                        {
+                            id = cells[0],
+                            name = cells[1],
+                        };
+                        catalogItems.Add(catalogItem);
+                    }
+                }
+            }
             _catalogItems = catalogItems.AsEnumerable();
         }
 
@@ -30,7 +47,8 @@ namespace RecommendationsBot.Repositories
 
         public IEnumerable<CatalogItem> SearchCatalogItems(string query)
         {
-            return _catalogItems.Where(i => i.name.ToLower().Contains(query.ToLower())).AsEnumerable();
+            //this is a very basic search for the sake of a simple example. In a real scenario, a full search service would be used here such as a custom API or Azure Search
+            return _catalogItems.Where(i => i.name.ToLower().Contains(query.ToLower()));
         }
 
         public CatalogItem GetItemById(string id)
