@@ -25,8 +25,8 @@ namespace RecommendationsBot.Dialogs
         // Entry point to the Dialog
         public async Task StartAsync(IDialogContext context)
         {
-            //get top 10 catalog items
-            var catalogItems = _catalogRepository.SearchCatalogItems(_searchQuery).Take(10);
+            //get top 15 catalog items
+            var catalogItems = _catalogRepository.SearchCatalogItems(_searchQuery).Take(15);
 
             //Create card to present choices 
             IMessageActivity messageButtons = (Activity)context.MakeMessage();
@@ -41,7 +41,7 @@ namespace RecommendationsBot.Dialogs
             HeroCard plCard = new HeroCard()
             {
                 Title = null,
-                Subtitle = string.Format($"I searched for {_searchQuery} and these were the first 10 items, which one did you want?"),
+                Subtitle = string.Format($"I searched for {_searchQuery} and these were the first 15 items, which one did you want?"),
                 Images = null,
                 Buttons = cardButtons
             };
@@ -56,7 +56,7 @@ namespace RecommendationsBot.Dialogs
         {
             var message = await argument;
 
-            // State transition - add 'recommendations' Dialog to the stack, when done call AfterChildDialogIsDone callback
+            // State transition - add RecommendationsDialog to the stack, when done call AfterChildDialogIsDone callback
             context.Call<object>(new RecommendationsDialog(message.Text), AfterChildDialogIsDone);
         }
 

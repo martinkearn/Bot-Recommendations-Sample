@@ -27,7 +27,7 @@ namespace RecommendationsBot.Dialogs
         // Entry point to the Dialog
         public async Task StartAsync(IDialogContext context)
         {
-            var fbtItems = await _recommendationsRepository.GetFBTItems(_sourceCatalogItem.id, "10", "0");
+            var fbtItems = await _recommendationsRepository.GetFBTItems(_sourceCatalogItem.id, "15", "0");
 
             if (fbtItems.recommendedItems.Count > 0)
             {
